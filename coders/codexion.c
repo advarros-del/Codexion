@@ -3,16 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42malaga.c      +#+  +:+       +#+        */
+/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/06/23 17:04:55 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/07/13 23:14:16 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-static void	the_true_parser(char **argv, t_data **data)
+
+static void	the_true_parser(char **argv, t_data **data);
+
+//  int get_time_ms()
+// {
+// 	int n;
+// 	n = gettimeofday();
+// 	n_ms = n * 100
+// 	return (n)
+// }
+void	the_true_data(char **argv, t_data **data)
 {
 	(*data)->coders = ft_atol(argv[1]);
 	(*data)->burntime = ft_atol(argv[2]);
@@ -29,9 +39,39 @@ static void	the_true_parser(char **argv, t_data **data)
 
 int	codexion(char **argv)
 {
+	t_shared g_info;
 	t_data	*data;
+	pthread_t *threads;
+	t_coder	*the_coders;
+	t_dongle *donglers;
 
 	data = malloc(sizeof(t_data));
-	the_true_parser(argv, &data);
+	the_true_data(argv, &data);
+	g_info.data = data;
+	threads = malloc(data->coders * sizeof(pthread_t));
+	the_coders = malloc(data->coders * sizeof(t_coder));
+	g_info.coders = the_coders;
+	donglers = malloc(data->coders * sizeof(t_dongle));
+	g_info.donglers = donglers;
+	g_info.simulation_end = 1;
+	g_info.start_ime = gettimeofday();
+	
 	return (0);
+} 
+
+pthread_t	fill_coder(pthread_t treads,t_data data)
+{
+	return treads;
+	
 }
+
+long get_time_ms()
+{
+	int	tm;
+	
+	tm = gettimeofday();
+	
+	
+}
+
+

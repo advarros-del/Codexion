@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/06/25 14:03:56 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/06/25 14:27:49 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct share
 	t_data *data;
 	long start_ime;
 	int simulation_end;
-	pthread_mutex_t *print_mutex;
+	pthread_mutex_t print_mutex;
 	t_coder *coders;
 	t_dongle *donglers;
 	
@@ -63,9 +63,9 @@ typedef struct share
 typedef struct dongle
 {
 	int used;
-	pthread_mutex_t *mutex;
+	pthread_mutex_t mutex;
 	long last_release;
-	int cond;
+	int available;
 	
 }
 	t_dongle;
