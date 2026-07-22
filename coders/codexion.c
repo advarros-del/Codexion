@@ -12,16 +12,6 @@
 
 #include "codexion.h"
 
-
-static void	the_true_parser(char **argv, t_data **data);
-
-//  int get_time_ms()
-// {
-// 	int n;
-// 	n = gettimeofday();
-// 	n_ms = n * 100
-// 	return (n)
-// }
 void	the_true_data(char **argv, t_data **data)
 {
 	(*data)->coders = ft_atol(argv[1]);
@@ -39,52 +29,27 @@ void	the_true_data(char **argv, t_data **data)
 
 int	codexion(char **argv)
 {
-	t_shared g_info;
-	t_data	*data;
-	pthread_t *threads;
-	t_coder	*the_coders;
-	t_dongle *donglers;
+	t_shared	g_info;
+	t_data		*data;
+	pthread_t	*threads;
+	t_coder		*the_coders;
+	t_dongle	*donglers;
+	int	i;
 
 	data = malloc(sizeof(t_data));
 	the_true_data(argv, &data);
 	g_info.data = data;
 	threads = malloc(data->coders * sizeof(pthread_t));
 	the_coders = malloc(data->coders * sizeof(t_coder));
-	g_info.coders = the_coders;
 	donglers = malloc(data->coders * sizeof(t_dongle));
-	g_info.donglers = donglers;
-	g_info.simulation_end = 0;
-	g_info.start_ime = get_time_ms;
-	
-	return (0);
-} 
-
-pthread_t	fill_coder(pthread_t treads,t_data data)
-{
-	return treads;
-	
-}
-ç
-long long get_time_ms(void)
-{
-	struct timeval	tv;
-	
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));	
-}
-
-void init_donglers (t_shared *g_info)
-{
-	int	i;
-
+	if (fill_things(&g_info, the_coders, donglers) != 0)
+		return (1);
 	i = 0;
-	while (i <= g_info->data->coders)
+	while (i < g_info.data->coders)
 	{
-		g_info->donglers->used = 0;
-		g_info->donglers->last_release = 0;
-		g_info->donglers->available = 0;
-		if (pthread_mutex_init(&g_info->donglers[i].mutex, NULL) != 0)
-			return (0);
+		threads[i] = g_info.coders
 		i++;
 	}
+
+	return (0);
 }
