@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/07/13 23:14:16 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/07/22 10:15:33 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ int	codexion(char **argv)
 	g_info.coders = the_coders;
 	donglers = malloc(data->coders * sizeof(t_dongle));
 	g_info.donglers = donglers;
-	g_info.simulation_end = 1;
-	g_info.start_ime = gettimeofday();
+	g_info.simulation_end = 0;
+	g_info.start_ime = get_time_ms;
 	
 	return (0);
 } 
@@ -64,14 +64,27 @@ pthread_t	fill_coder(pthread_t treads,t_data data)
 	return treads;
 	
 }
-
-long get_time_ms()
+ç
+long long get_time_ms(void)
 {
-	int	tm;
+	struct timeval	tv;
 	
-	tm = gettimeofday();
-	
-	
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));	
 }
 
+void init_donglers (t_shared *g_info)
+{
+	int	i;
 
+	i = 0;
+	while (i <= g_info->data->coders)
+	{
+		g_info->donglers->used = 0;
+		g_info->donglers->last_release = 0;
+		g_info->donglers->available = 0;
+		if (pthread_mutex_init(&g_info->donglers[i].mutex, NULL) != 0)
+			return (0);
+		i++;
+	}
+}
