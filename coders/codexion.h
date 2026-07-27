@@ -25,9 +25,9 @@ typedef struct data
 {
 	int	coders;
 	int	burntime;
-	int	compile_time;
-	int	debug_time;
-	int	refac_time;
+	long long	compile_time;
+	long long	debug_time;
+	long long	refac_time;
 	int	n_compile;
 	int	dongle_cd;
 	int	scheduler;
@@ -83,6 +83,10 @@ typedef struct don_container
 
 
 
-int	fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers);
+int			fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers);
 long int	ft_atol(const char *nptr);
+long long	gettime(void);
+void	sleepnow(long long time);
+void		*coder_routine(void *arg);
+int			codexion(char **argv);
 #endif

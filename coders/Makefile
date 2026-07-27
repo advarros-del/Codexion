@@ -23,7 +23,9 @@ CFLAGS = -Wextra -Werror -Wall -g
 #All files .c that you need
 SRC = codexion.c\
 	ft_atol.c\
-	main.c
+	main.c\
+	fill_struc.c\
+	rutines.c\
 	
 #Transform all the .c to .o
 OBJS = $(SRC:.c=.o)

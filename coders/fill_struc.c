@@ -1,23 +1,18 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fill_struc.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adrvarga <adrvarga@student.42malaga.c      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/07/27 09:38:36 by adrvarga          #+#    #+#             */
+/*   Updated: 2026/07/27 09:38:50 by adrvarga         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "codexion.h"
 
-long long	get_time_mili(void)
+long long	gettime(void)
 {
 	struct timeval	tv;
 
@@ -71,7 +66,7 @@ void	fill_shared(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)
 	g_info->coders = the_coders;
 	g_info->donglers = donglers;
 	g_info->simulation_end = 0;
-	g_info->start_ime = get_time_mili();
+	g_info->start_ime = gettime();
 }
 
 int	fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)

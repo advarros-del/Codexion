@@ -26,6 +26,23 @@ void	the_true_data(char **argv, t_data **data)
 	else
 		(*data)->scheduler = 1;
 }
+//void	take_don(t_coder *coder)
+//{	
+//	if (coder->l_don < )
+//}
+
+//void	take_one_don(t_dongle *dongle)
+//{
+//	pthread_mutex_lock(dongle->mutex)
+//}
+
+void	sleepnow(long long time)
+{
+	long long	now;
+	now = gettime();
+	usleep(time);
+
+}
 
 int	codexion(char **argv)
 {
@@ -47,7 +64,8 @@ int	codexion(char **argv)
 	i = 0;
 	while (i < g_info.data->coders)
 	{
-		threads[i] = g_info.coders
+		if (pthread_create(&g_info.coders[i].thread, NULL, coder_routine, &g_info.coders[i]) != 0)
+			return (0);
 		i++;
 	}
 
