@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/07/13 19:58:57 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/08/10 20:00:36 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 typedef struct heap_call
 {
 	int	id_code;
-	int	time_stamp;
-	int	deadline;
+	long long	time_stamp;
+	long long	deadline;
 }	t_heap_call;
 
 typedef struct data

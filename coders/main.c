@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42malaga.c      +#+  +:+       +#+        */
+/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:56:11 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/06/23 14:57:38 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/08/10 20:30:03 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	main(int argc, char **argv)
 		printf(" for correct usage");
 		return (1);
 	}
-	if (parser_error(argv) == 1 || codexion(argv) == 1)
+	if (parser_error(argv) == 1 || codexion(argv) == 1) // comprobar el limite  de int
 	{
 		printf("Something goes wrong");
 		return (1);
