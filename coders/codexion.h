@@ -53,6 +53,7 @@ typedef struct coder
 	t_dongle		*l_don;
 	t_dongle		*r_don;
 	struct share	*shared;
+	pthread_mutex_t	mutex;
 }	t_coder;
 
 typedef struct share
@@ -86,7 +87,10 @@ typedef struct don_container
 int			fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers);
 long int	ft_atol(const char *nptr);
 long long	gettime(void);
-void	sleepnow(long long time);
+void		sleepnow(long long time);
 void		*coder_routine(void *arg);
 int			codexion(char **argv);
+int			take_dong(t_dongle *x_don,  t_coder *x_coder);
+int			is_sim_ended(t_shared* g_info);
+int			on_fire(t_coder *coders);
 #endif
