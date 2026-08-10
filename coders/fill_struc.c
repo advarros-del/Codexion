@@ -46,6 +46,7 @@ void	fill_coder(t_shared *g_info)
 int	init_donglers(t_shared *g_info)
 {
 	int	i;
+	int j;
 
 	i = 0;
 	while (i < g_info->data->coders)
@@ -53,6 +54,15 @@ int	init_donglers(t_shared *g_info)
 		g_info->donglers[i].used = 0;
 		g_info->donglers[i].last_release = 0;
 		g_info->donglers[i].available = 0;
+		g_info->donglers[i].requests = malloc(sizeof(t_heap_call) * g_info->data->coders);
+		j = 0;
+		while (g_info->data->coders > j)
+		{
+			g_info->donglers[i].requests[j].id_code = j;
+			g_info->donglers[i].requests[j].deadline = 0;
+			g_info->donglers[i].requests[j].time_stamp = 0;
+			j++;
+		}
 		pthread_cond_init(&g_info->donglers[i].cond, NULL);
 		if (pthread_mutex_init(&g_info->donglers[i].mutex, NULL) != 0)
 			return (0);

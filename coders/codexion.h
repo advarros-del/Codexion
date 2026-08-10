@@ -20,6 +20,12 @@
 # include <string.h>
 # include <sys/time.h>
 
+typedef struct heap_call
+{
+	int	id_code;
+	int	time_stamp;
+	int	deadline;
+}	t_heap_call;
 
 typedef struct data
 {
@@ -40,6 +46,7 @@ typedef struct dongle
 	pthread_cond_t	cond;
 	long			last_release;
 	int				available;
+	t_heap_call		*requests;
 
 }	t_dongle;
 
@@ -69,12 +76,6 @@ typedef struct share
 
 }	t_shared;
 
-typedef struct heap_call
-{
-	int	id_code;
-	int	time_stamp;
-	int	deadline;
-}	t_heap_call;
 
 typedef struct don_container
 {
@@ -91,6 +92,9 @@ void		sleepnow(long long time);
 void		*coder_routine(void *arg);
 int			codexion(char **argv);
 int			take_dong(t_dongle *x_don,  t_coder *x_coder);
+void		is_available(t_dongle *x_dong);
+int			is_sim(t_shared *g_info);
 int			is_sim_ended(t_shared* g_info);
+void		requesting(t_dongle *x_don, t_coder *x_coder);
 int			on_fire(t_coder *coders);
 #endif

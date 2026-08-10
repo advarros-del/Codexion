@@ -12,33 +12,29 @@
 
 #include "codexion.h"
 
-void	compiling(t_coder *coder)
+int	compiling(t_coder *coder)
 {
 	if (take_dong(coder->l_don, coder) == 1)
-		return;
+		return (1);
 	printf("the coder %d take a dongler", coder->id);
 	if (take_dong(coder->r_don, coder) == 1)
 	{
-		pthread_mutex_lock(&coder->l_don->mutex);
-		coder->l_don->available = 0;
-		pthread_mutex_unlock(&coder->l_don->mutex);
-		return;
+		pthread_cond_signal(&coder->r_don->cond);
+		is_available(coder->l_don);
+		return(1);
 	}
 	printf("the coder %d take a dongler", coder->id);
 	printf("coder %d compiling", coder->id);
 	pthread_mutex_lock(&coder->mutex);
 	coder->compile_counter += 1;
-	pthread_mutex_unlock(&coder->mutex);
 	coder->last_compile = gettime();
+	pthread_mutex_unlock(&coder->mutex);
 	sleepnow(coder->shared->data->compile_time);
-	pthread_mutex_lock(&coder->l_don->mutex);
-	coder->l_don->available = 0;
-	pthread_mutex_unlock(&coder->l_don->mutex);
+	is_available(coder->l_don);
 	pthread_cond_signal(&coder->l_don->cond);
-	pthread_mutex_lock(&coder->r_don->mutex);
-	coder->r_don->available = 0;
-	pthread_mutex_unlock(&coder->r_don->mutex);
+	is_available(coder->r_don);
 	pthread_cond_signal(&coder->r_don->cond);
+	return (0);
 }
 
 void	is_debugging(t_coder *coder)
@@ -60,7 +56,8 @@ void	*coder_routine(void *arg)
 	coder = (t_coder *)arg;
 	while (1)
 	{
-		compiling(coder);
+		if (compiling(coder) == 1)
+			break;
 		is_debugging(coder);
 		is_refactoring(coder);
 		if (is_sim_ended(coder->shared) == 1 || on_fire(coder) == 1)
@@ -81,8 +78,9 @@ int	take_dong(t_dongle *x_don, t_coder *x_coder)
 			}
 		else
 			{
+				requesting(x_don, x_coder);
 				pthread_cond_wait(&x_don->cond, &x_don->mutex);
-				if (x_coder->shared->simulation_end == 1)
+				if (is_sim(x_coder->shared) == 1)
 				{
 					pthread_mutex_unlock(&x_don->mutex);
 					return (1);
@@ -143,6 +141,9 @@ int	monitor_rutine(t_shared *g_info)
 	{
 		if (is_sim_ended(g_info) == 1 || on_fire(g_info->coders) == 1)
 			{
+				pthread_mutex_lock(&g_info->end_mutex);
+				g_info->simulation_end = 1;
+				pthread_mutex_unlock(&g_info->end_mutex);
 				while (g_info->data->coders > i)
 				{
 					pthread_cond_signal(&g_info->donglers[i].cond);
@@ -153,4 +154,21 @@ int	monitor_rutine(t_shared *g_info)
 		sleepnow(100);
 	}
 		return (1);
+}
+
+void is_available(t_dongle *x_dong)
+{
+	pthread_mutex_lock(&x_dong->mutex);
+	x_dong->available = !(x_dong->available);
+	pthread_mutex_unlock(&x_dong->mutex);
+}
+
+int	is_sim(t_shared *g_info)
+{
+	int	i;
+
+	pthread_mutex_lock(&g_info->end_mutex);
+	i = g_info->simulation_end;
+	pthread_mutex_unlock(&g_info->end_mutex);
+	return (i);
 }
