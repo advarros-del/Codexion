@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fill_struc.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42malaga.c      +#+  +:+       +#+        */
+/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 09:38:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/07/27 09:38:50 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/14 21:26:45 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	fill_coder(t_shared *g_info)
 		g_info->coders[i].last_compile = 0;
 		g_info->coders[i].status = 0;
 		g_info->coders[i].thread = 0; //no se porque
+		g_info->coders[i].shared = g_info;
 		g_info->coders[i].r_don = &g_info->donglers[i];
 		if (i == 0)
 			g_info->coders[i].l_don = &g_info->donglers[aux - 1];

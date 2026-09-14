@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/08/10 19:13:18 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/14 22:14:31 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,47 +26,55 @@ void	the_true_data(char **argv, t_data **data)
 	else
 		(*data)->scheduler = 1;
 }
-//void	take_don(t_coder *coder)
-//{	
-//	if (coder->l_don < )
-//}
-
-//void	take_one_don(t_dongle *dongle)
-//{
-//	pthread_mutex_lock(dongle->mutex)
-//}
-
-void	sleepnow(long long time)
-{
-	long long	now;
-	now = gettime();
-	usleep(time);
-
-}
 
 int	codexion(char **argv)
 {
 	t_shared	g_info;
 	t_data		*data;
-	pthread_t	*threads;
 	t_coder		*the_coders;
 	t_dongle	*donglers;
+	pthread_t	monitor;
 	int	i;
 
 	data = malloc(sizeof(t_data));
 	the_true_data(argv, &data);
 	g_info.data = data;
-	threads = malloc(data->coders * sizeof(pthread_t));
 	the_coders = malloc(data->coders * sizeof(t_coder));
 	donglers = malloc(data->coders * sizeof(t_dongle));
 	if (fill_things(&g_info, the_coders, donglers) != 0)
 		return (1);
+	if (pthread_create(&monitor, NULL, monitor_rutine, &g_info) != 0)
+			return (0);
 	i = 0;
 	while (i < g_info.data->coders)
 	{
-		if (pthread_create(&g_info.coders[i].thread, NULL, coder_routine, &g_info.coders[i]) != 0)
+		if (pthread_create(&g_info.coders[i].thread, NULL,
+				coder_routine, &g_info.coders[i]) != 0)
 			return (0);
 		i++;
 	}
+	i = 0;
+	while (i < g_info.data->coders)
+	{
+		pthread_join(g_info.coders[i].thread, NULL);
+		i++;
+	}
+	pthread_join(monitor, NULL);
 	return (0);
+}
+
+void	printer(int phrase, int coder, t_shared g_info)
+{
+	char		list[][];
+	long long	timeline;
+	
+	timeline = the_timeline(g_info);
+	list[4][16] = {
+		"is burned",
+		"take a dongler",
+	 	"leave a dongler",
+	 	"is compiling",
+	 	"is debugging",
+	 	"is refactoring"}
+	printf("%d Coder %d %s \n", timeline, coder, list[phrase])
 }

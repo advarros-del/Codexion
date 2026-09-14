@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/08/10 20:00:36 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/08/25 14:06:42 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,11 +90,13 @@ long int	ft_atol(const char *nptr);
 long long	gettime(void);
 void		sleepnow(long long time);
 void		*coder_routine(void *arg);
+void		*monitor_rutine(void *arg);
 int			codexion(char **argv);
 int			take_dong(t_dongle *x_don,  t_coder *x_coder);
 void		is_available(t_dongle *x_dong);
 int			is_sim(t_shared *g_info);
 int			is_sim_ended(t_shared* g_info);
+int			fifo_thing(t_dongle *x_dong, int coders, int id_coder);
 void		requesting(t_dongle *x_don, t_coder *x_coder);
 int			on_fire(t_coder *coders);
 #endif

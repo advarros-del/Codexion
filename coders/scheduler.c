@@ -6,14 +6,14 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/10 12:29:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/08/10 20:00:21 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/14 19:33:34 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "codexion.h"
 
-int	fifo_thing(t_dongle *x_dong, int coders)
+int	fifo_thing(t_dongle *x_dong, int coders, int id_coder)
 {
 	int				i;
 	long long int	aux;
@@ -30,7 +30,8 @@ int	fifo_thing(t_dongle *x_dong, int coders)
 		}
 		i++;
 	}
-	x_dong->requests[id_aux].time_stamp = 0;
+	if (id_coder == id_aux)
+		x_dong->requests[id_aux].time_stamp = 0;
 	return (id_aux);
 }
 

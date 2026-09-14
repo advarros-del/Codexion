@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rutines.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42malaga.c      +#+  +:+       +#+        */
+/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 15:01:33 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/07/27 15:01:33 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/14 20:31:17 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	compiling(t_coder *coder)
 	coder->compile_counter += 1;
 	coder->last_compile = gettime();
 	pthread_mutex_unlock(&coder->mutex);
-	sleepnow(coder->shared->data->compile_time);
+	usleep(coder->shared->data->compile_time);
 	is_available(coder->l_don);
 	pthread_cond_signal(&coder->l_don->cond);
 	is_available(coder->r_don);
@@ -40,13 +40,13 @@ int	compiling(t_coder *coder)
 void	is_debugging(t_coder *coder)
 {
 	printf("coder %d is debugging", coder->id);
-	sleepnow(coder->shared->data->debug_time);
+	usleep(coder->shared->data->debug_time);
 }
 
 void	is_refactoring(t_coder *coder)
 {
 	printf("coder %d is refactoring", coder->id);
-	sleepnow(coder->shared->data->refac_time);
+	usleep(coder->shared->data->refac_time);
 }
 
 void	*coder_routine(void *arg)
@@ -80,6 +80,11 @@ int	take_dong(t_dongle *x_don, t_coder *x_coder)
 			{
 				requesting(x_don, x_coder);
 				pthread_cond_wait(&x_don->cond, &x_don->mutex);
+				if (fifo_thing(x_don, x_coder->shared->data->coders, x_coder->id) == x_coder->id)
+				{
+					x_don->available = 1;
+					break;
+				}
 				if (is_sim(x_coder->shared) == 1)
 				{
 					pthread_mutex_unlock(&x_don->mutex);
@@ -132,9 +137,12 @@ int	on_fire(t_coder *coders)
 	return (0);
 }
 
-int	monitor_rutine(t_shared *g_info)
+void	*monitor_rutine(void *arg)
 {
 	int	i;
+	t_shared	*g_info;
+
+	g_info = (t_shared *)arg;
 
 	i = 0;
 	while (1)
@@ -151,9 +159,9 @@ int	monitor_rutine(t_shared *g_info)
 				}
 				break;
 			}
-		sleepnow(100);
+		usleep(100);
 	}
-		return (1);
+	return (NULL);
 }
 
 void is_available(t_dongle *x_dong)
