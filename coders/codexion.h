@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/08/25 14:06:42 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/15 20:43:27 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ typedef struct don_container
 
 
 int			fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers);
+void		printer(int phrase, int coder, t_shared *g_info);
 long int	ft_atol(const char *nptr);
 long long	gettime(void);
 void		sleepnow(long long time);

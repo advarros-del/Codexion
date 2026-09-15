@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 15:01:33 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/14 20:31:17 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/15 20:56:33 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,20 @@ int	compiling(t_coder *coder)
 {
 	if (take_dong(coder->l_don, coder) == 1)
 		return (1);
-	printf("the coder %d take a dongler", coder->id);
+	printer(2, coder->id, coder->shared);
 	if (take_dong(coder->r_don, coder) == 1)
 	{
 		pthread_cond_signal(&coder->r_don->cond);
 		is_available(coder->l_don);
 		return(1);
 	}
-	printf("the coder %d take a dongler", coder->id);
-	printf("coder %d compiling", coder->id);
+	printer(2, coder->id, coder->shared);	
+	printer(4, coder->id, coder->shared);
 	pthread_mutex_lock(&coder->mutex);
 	coder->compile_counter += 1;
 	coder->last_compile = gettime();
 	pthread_mutex_unlock(&coder->mutex);
-	usleep(coder->shared->data->compile_time);
+	usleep(coder->shared->data->compile_time * 1000);
 	is_available(coder->l_don);
 	pthread_cond_signal(&coder->l_don->cond);
 	is_available(coder->r_don);
@@ -39,14 +39,14 @@ int	compiling(t_coder *coder)
 
 void	is_debugging(t_coder *coder)
 {
-	printf("coder %d is debugging", coder->id);
-	usleep(coder->shared->data->debug_time);
+	printer(5, coder->id, coder->shared);
+	usleep(coder->shared->data->debug_time * 1000);
 }
 
 void	is_refactoring(t_coder *coder)
 {
-	printf("coder %d is refactoring", coder->id);
-	usleep(coder->shared->data->refac_time);
+	printer(6, coder->id, coder->shared);
+	usleep(coder->shared->data->refac_time * 1000);
 }
 
 void	*coder_routine(void *arg)
@@ -127,7 +127,7 @@ int	on_fire(t_coder *coders)
 		pthread_mutex_lock(&coders[i].mutex);
 		if ((now - coders[i].last_compile) >= coders->shared->data->burntime)
 		{	
-			printf("Coder %d is burned", coders[i].id);
+			printer(1, coders->id, coders->shared);
 			pthread_mutex_unlock(&coders[i].mutex);
 			return (1);
 		}

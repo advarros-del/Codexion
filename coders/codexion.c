@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/14 22:14:31 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/15 19:47:51 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,19 +62,27 @@ int	codexion(char **argv)
 	pthread_join(monitor, NULL);
 	return (0);
 }
-
-void	printer(int phrase, int coder, t_shared g_info)
+long long	the_timeline(t_shared *g_info)
 {
-	char		list[][];
+	long long	t;
+
+	pthread_mutex_lock(&g_info->print_mutex);
+	t = gettime() - g_info->start_ime;
+	pthread_mutex_unlock(&g_info->print_mutex);
+	return (t);
+}
+
+void	printer(int phrase, int coder, t_shared *g_info)
+{
+	char		*list[6];
 	long long	timeline;
 	
 	timeline = the_timeline(g_info);
-	list[4][16] = {
-		"is burned",
-		"take a dongler",
-	 	"leave a dongler",
-	 	"is compiling",
-	 	"is debugging",
-	 	"is refactoring"}
-	printf("%d Coder %d %s \n", timeline, coder, list[phrase])
+	list[1] = "is burned";
+	list[2] = "take a dongle";
+	list[3] = "leave a dongle";
+	list[4] = "is compiling";
+	list[5] = "is debugging";
+	list[6] = "is refactoring";
+	printf("%lld Coder %d %s \n", timeline, coder, list[phrase]);
 }
