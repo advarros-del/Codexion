@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 09:38:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/14 21:26:45 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/18 17:05:50 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,10 @@ void	fill_coder(t_shared *g_info)
 	{
 		g_info->coders[i].id = i;
 		g_info->coders[i].compile_counter = 0;
-		g_info->coders[i].last_compile = 0;
+		g_info->coders[i].last_compile = g_info->start_ime;
 		g_info->coders[i].status = 0;
+		g_info->coders[i].ndong = 0;
+		pthread_mutex_init(&g_info->coders[i].mutex, NULL);
 		g_info->coders[i].thread = 0; //no se porque
 		g_info->coders[i].shared = g_info;
 		g_info->coders[i].r_don = &g_info->donglers[i];
@@ -78,6 +80,8 @@ void	fill_shared(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)
 	g_info->donglers = donglers;
 	g_info->simulation_end = 0;
 	g_info->start_ime = gettime();
+	pthread_mutex_init(&g_info->end_mutex, NULL);
+	pthread_mutex_init(&g_info->print_mutex, NULL);
 }
 
 int	fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)

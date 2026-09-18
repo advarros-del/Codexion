@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 15:01:33 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/15 20:56:33 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/18 17:36:47 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,10 @@ int	compiling(t_coder *coder)
 	pthread_mutex_unlock(&coder->mutex);
 	usleep(coder->shared->data->compile_time * 1000);
 	is_available(coder->l_don);
+	printer(3, coder->id, coder->shared);
 	pthread_cond_signal(&coder->l_don->cond);
 	is_available(coder->r_don);
+	printer(3, coder->id, coder->shared);
 	pthread_cond_signal(&coder->r_don->cond);
 	return (0);
 }
@@ -60,7 +62,7 @@ void	*coder_routine(void *arg)
 			break;
 		is_debugging(coder);
 		is_refactoring(coder);
-		if (is_sim_ended(coder->shared) == 1 || on_fire(coder) == 1)
+		if (is_sim_ended(coder->shared) == 1 || on_fire(coder->shared->coders) == 1)
 			break;		
 	}
 	return (NULL);
@@ -74,6 +76,7 @@ int	take_dong(t_dongle *x_don, t_coder *x_coder)
 		if (x_don->available == 0)
 			{
 				x_don->available = 1;
+				x_coder->ndong += 1;
 				break;
 			}
 		else
@@ -179,4 +182,23 @@ int	is_sim(t_shared *g_info)
 	i = g_info->simulation_end;
 	pthread_mutex_unlock(&g_info->end_mutex);
 	return (i);
+}
+
+void the_dongles(t_coder *coder)
+{
+	//si coder-> i -1 es negativo -> coger derecha y luego izquierda. Else izquierda primero.+
+	//take dongle del que sea. y luego intentar coger el otro. Tener un avisador de cuantos dongles tiene cogisdos. Si tiene 1 dongle liberar y el otro esta cogido, primero soltar, cambiar el avisador y 
+	// ponerme en espera.
+	if (coder->id - 1 < 0)
+	{
+		if (take_dong(coder->l_don, coder) == 1)
+			return (1);
+		printer(2, coder->id, coder->shared);
+		if (take_dong(coder->r_don, coder) == 1)
+		{
+			pthread_cond_signal(&coder->r_don->cond);
+			is_available(coder->l_don);
+			return(1);
+		}
+	}
 }

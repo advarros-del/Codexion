@@ -26,33 +26,38 @@ de compilaciones sin "quemarse". Soporta dos planificadores: `fifo` y `edf`
 
 `./codexion <coders> <burntime> <compile_time> <debug_time> <refac_time> <n_compile> <dongle_cd> <fifo|edf>`
 
-## Estado actual (última sesión: 14/09/2026)
+## Estado actual (última sesión: 15/09/2026)
 
-- **Bug del coredump SOLUCIONADO.** El problema era que `coders[i].shared`
-  nunca se inicializaba: `the_coders` viene de `malloc` (basura) y cada
-  `t_coder.shared` (un `struct share *`) apuntaba a memoria inválida. En
-  `fill_coder` se ha añadido `g_info->coders[i].shared = g_info;` dentro del
-  bucle. El programa ya ejecuta sin crashear (probado con `lldb`).
+- **Bug del coredump SOLUCIONADO** (sesión anterior). `coders[i].shared` se
+  inicializa en `fill_coder` con `g_info->coders[i].shared = g_info;` y el
+  programa ejecuta sin crashear.
 - Compila limpio con `cc -Wextra -Werror -Wall -g` (`make` OK).
-- En curso: función `printer()` para que cada `printf` lleve la timeline
-  (instante relativo = `gettime() - g_info->start_ime`) y use mensajes
-  prefijados por código numérico.
+- **`printer()` IMPLEMENTADA** (sesión de hoy):
+  - `printer(int phrase, int coder, t_shared *g_info)` con `print_mutex`
+    dentro de la propia función (lock + unlock).
+  - Mensajes prefijados por código: 1 burned, 2 take a dongle, 3 leave a
+    dongle, 4 compiling, 5 debugging, 6 refactoring.
+  - `the_timeline()` corregida: instante = `gettime() - start_ime` y con su
+    `pthread_mutex_unlock` correspondiente (faltaba y habría bloqueado).
+  - Se resolvió el conflicto de tipos entre `.h` y `.c`: `printer` usa
+    `t_shared *` (y se llama con `*coder->shared`).
+- **Bug usleep SOLUCIONADO** (hoy): `usleep` espera microsegundos pero los
+  tiempos vienen en ms. Había que multiplicar por 1000 (200 ms → 200000 us).
+  Hasta entonces toda la simulación corría casi instantánea y el timeline solo
+  llegaba a 1.
 
 ## Pendiente / siguiente
 
-- **Característica timeline** (diseño acordado):
-  - Función `printer(phrase, coder, g_info)` que reciba un código numérico de
-    evento, el id del coder y el `t_shared` (para la resta del tiempo).
-  - El `printf` debe tener `print_mutex` dentro de la propia función.
-  - Frases del subject (línea 271-275 del PDF): _X has taken a dongle_, _X is
-    compiling_, _X is debugging_, _X is refactoring_, _X burned out_.
-  - **Restricciones de la norma:** máximo 5 variables por función (los
-    parámetros no cuentan) y NO se puede declarar + inicializar en la misma
-    línea.
-  - **`strcpy` NO está autorizado** (lista de la línea 342) y no hay libft
-    enlazada. Pendiente de resolver: mecanismo que devuelva el `char *` de la
-    frase sin copiar (candidata: selección por `switch`/condiciones que
-    devuelvan el literal directamente).
+- **Por resolver (bug "0 Coder 0 is burned" al inicio)**:
+  1. En `fill_struc.c` `fill_coder`: `last_compile = 0` inicializa a 0, pero
+     `on_fire` compara `gettime() - last_compile >= burntime`; como `gettime()`
+     devuelve ms desde 1970, la resta es gigantesca y quema al instante.
+     Candidato: inicializar `last_compile` a `gettime()` (o `start_ime`).
+  2. En `rutines.c` `on_fire`: `printer(1, coders->id, ...)` usa el primer
+     coder, pero se itera con `coders[i]`. Imprime siempre "Coder 0".
+     Candidato: usar `coders[i].id` (y `coders[i].shared`).
+- Verificar el output tras esos dos arreglos (probado con
+  `./codexion 5 800 200 200 200 5 50 fifo`).
 - Revisar pasos del subject (está en `es.subject.pdf`) contra lo implementado.
 
 ## Notas de aprendizaje (curso)

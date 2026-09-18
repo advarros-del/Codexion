@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/15 20:43:27 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/18 17:05:25 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,9 @@ typedef struct coder
 {
 	int				id;
 	int				compile_counter;
-	int				last_compile;
+	long long		last_compile;
 	int				status;
+	int				ndong;
 	pthread_t		thread;
 	t_dongle		*l_don;
 	t_dongle		*r_don;
@@ -66,7 +67,7 @@ typedef struct coder
 typedef struct share
 {
 	t_data			*data;
-	long			start_ime;
+	long long		start_ime;
 	int				simulation_end;
 	pthread_mutex_t	end_mutex;
 	pthread_cond_t	end_cond;
