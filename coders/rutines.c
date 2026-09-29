@@ -6,7 +6,7 @@
 /*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 15:01:33 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/18 17:36:47 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/09/21 21:04:54 by adrvarga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,30 +71,13 @@ void	*coder_routine(void *arg)
 int	take_dong(t_dongle *x_don, t_coder *x_coder)
 {
 	pthread_mutex_lock(&x_don->mutex);
-	while (1)
+	if (x_don->available == 0)
 	{
-		if (x_don->available == 0)
-			{
-				x_don->available = 1;
-				x_coder->ndong += 1;
-				break;
-			}
-		else
-			{
-				requesting(x_don, x_coder);
-				pthread_cond_wait(&x_don->cond, &x_don->mutex);
-				if (fifo_thing(x_don, x_coder->shared->data->coders, x_coder->id) == x_coder->id)
-				{
-					x_don->available = 1;
-					break;
-				}
-				if (is_sim(x_coder->shared) == 1)
-				{
-					pthread_mutex_unlock(&x_don->mutex);
-					return (1);
-				}
-			}
+		x_don->available = 1;
+		x_coder->ndong += 1;
 	}
+	else
+	
 	pthread_mutex_unlock(&x_don->mutex);
 	return (0);
 }
@@ -189,7 +172,7 @@ void the_dongles(t_coder *coder)
 	//si coder-> i -1 es negativo -> coger derecha y luego izquierda. Else izquierda primero.+
 	//take dongle del que sea. y luego intentar coger el otro. Tener un avisador de cuantos dongles tiene cogisdos. Si tiene 1 dongle liberar y el otro esta cogido, primero soltar, cambiar el avisador y 
 	// ponerme en espera.
-	if (coder->id - 1 < 0)
+	if (coder->id - 1 > 0)
 	{
 		if (take_dong(coder->l_don, coder) == 1)
 			return (1);
@@ -200,5 +183,9 @@ void the_dongles(t_coder *coder)
 			is_available(coder->l_don);
 			return(1);
 		}
+		if (coder->ndong != 2)
+			i
 	}
+	else 
 }
+
