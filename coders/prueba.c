@@ -1,36 +1,8 @@
 #include "codexion.h"
-void    cosa(t_coder *coder)
-{
-    int id;
-
-    id = take_id(coder);
-    if (id - 1 < 0)
-    {   
-        if (take_dong(coder->r_don, coder) == 2)
-            go_to_sleep(coder, 0, coder->r_don);
-        if (take_dong(coder->l_don, coder) == 2)
-            go_to_sleep(coder, 1,coder->l_don);
-    }
-    else
-    {   
-        if (take_dong(coder->l_don, coder) == 2)
-            go_to_sleep(coder, 0, coder->l_don);
-        if (take_dong(coder->r_don, coder) == 2)
-            go_to_sleep(coder, 2, coder->r_don);
-    }
-
-}
 
 void go_to_sleep(t_coder *coder, int dongle, t_dongle *x_dongle) //1 derecha 2 izquierda 0 nada
 {
-    if (coder->ndong != 0) 
-    {
-        if (dongle == 1)
-            is_available(coder->r_don);
-        else
-            is_available(coder->l_don);
-    }
-    coder->ndong = 0;
+    free_dongle(coder, dongle)
     while(1)
     {
         requesting(x_dongle, coder);
@@ -43,4 +15,19 @@ void go_to_sleep(t_coder *coder, int dongle, t_dongle *x_dongle) //1 derecha 2 i
             return (1);
         }
     }
+    compiling(coder)
+}
+
+void    free_dongle(t_coder *coder, int ndong)
+{
+    if (ndong == 0)
+        is_available(coder->r_don);
+    else if (ndong == 1)
+        is_available(coder->l_don);
+    else if (ndong == 2)
+        {
+            is_available(coder->l_don);
+            is_available(coder->r_don);
+        }
+    coder->ndong = 0;
 }

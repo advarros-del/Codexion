@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/18 17:05:25 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/10/25 19:59:28 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ void		sleepnow(long long time);
 void		*coder_routine(void *arg);
 void		*monitor_rutine(void *arg);
 int			codexion(char **argv);
+int			compiling(t_coder *coder);
 int			take_dong(t_dongle *x_don,  t_coder *x_coder);
 void		is_available(t_dongle *x_dong);
 int			is_sim(t_shared *g_info);

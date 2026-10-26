@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+         #
+#    By: adrian <adrian@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/30 11:27:05 by adrvarga          #+#    #+#              #
-#    Updated: 2026/08/25 13:24:35 by adrvarga         ###   ########.fr        #
+#    Updated: 2026/10/25 19:32:40 by adrian           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC = codexion.c\
 	fill_struc.c\
 	rutines.c\
 	scheduler.c\
+	compilation.c\
 	
 #Transform all the .c to .o
 OBJS = $(SRC:.c=.o)

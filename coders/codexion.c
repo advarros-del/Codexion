@@ -3,28 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/15 19:47:51 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/10/25 19:28:33 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	the_true_data(char **argv, t_data **data)
+t_data	*the_true_data(char **argv)
 {
-	(*data)->coders = ft_atol(argv[1]);
-	(*data)->burntime = ft_atol(argv[2]);
-	(*data)->compile_time = ft_atol(argv[3]);
-	(*data)->debug_time = ft_atol(argv[4]);
-	(*data)->refac_time = ft_atol(argv[5]);
-	(*data)->n_compile = ft_atol(argv[6]);
-	(*data)->dongle_cd = ft_atol(argv[7]);
+	t_data	*data;
+
+	data = malloc(sizeof(t_data));
+	if (!data)
+		return (NULL);
+	data->coders = ft_atol(argv[1]);
+	data->burntime = ft_atol(argv[2]);
+	data->compile_time = ft_atol(argv[3]);
+	data->debug_time = ft_atol(argv[4]);
+	data->refac_time = ft_atol(argv[5]);
+	data->n_compile = ft_atol(argv[6]);
+	data->dongle_cd = ft_atol(argv[7]);
 	if (strlen(argv[8]) == 4)
-		(*data)->scheduler = 0;
+		data->scheduler = 0;
 	else
-		(*data)->scheduler = 1;
+		data->scheduler = 1;
+	return (data);
 }
 
 int	codexion(char **argv)
@@ -36,11 +42,14 @@ int	codexion(char **argv)
 	pthread_t	monitor;
 	int	i;
 
-	data = malloc(sizeof(t_data));
-	the_true_data(argv, &data);
+	data = the_true_data(argv);
 	g_info.data = data;
 	the_coders = malloc(data->coders * sizeof(t_coder));
+	if (!the_coders)
+		return (1);
 	donglers = malloc(data->coders * sizeof(t_dongle));
+	if (!donglers)
+		return (1);
 	if (fill_things(&g_info, the_coders, donglers) != 0)
 		return (1);
 	if (pthread_create(&monitor, NULL, monitor_rutine, &g_info) != 0)
@@ -62,6 +71,7 @@ int	codexion(char **argv)
 	pthread_join(monitor, NULL);
 	return (0);
 }
+
 long long	the_timeline(t_shared *g_info)
 {
 	long long	t;
