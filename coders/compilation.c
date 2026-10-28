@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/10 12:29:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/10/25 20:25:38 by adrian           ###   ########.fr       */
+/*   Updated: 2026/10/26 21:29:29 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,23 @@
 
 int	take_dongles(t_coder *coder)
 {
-	pthread_mutex_lock(&coder->r_don->mutex);
-	pthread_mutex_lock(&coder->l_don->mutex);
-	if (coder->r_don->available != 0 || coder->l_don->available != 0)
+	if (coder->id == 0)
+	{
+		pthread_mutex_lock(&coder->r_don->mutex);
+		pthread_mutex_lock(&coder->l_don->mutex);
+	}
+	else
+	{
+		pthread_mutex_lock(&coder->l_don->mutex);
+		pthread_mutex_lock(&coder->r_don->mutex);
+	}
+	if (coder->r_don->available != 0)
+	{
+		pthread_mutex_unlock(&coder->r_don->mutex);
+		pthread_mutex_unlock(&coder->l_don->mutex);
+		return (1);
+	}
+	else if (coder->l_don->available != 0)
 	{
 		pthread_mutex_unlock(&coder->r_don->mutex);
 		pthread_mutex_unlock(&coder->l_don->mutex);
@@ -54,19 +68,28 @@ void is_available(t_dongle *x_dong)
 
 int go_to_sleep(t_coder *coder, t_dongle *x_dongle)
 {
+	pthread_mutex_lock(&x_dongle->mutex);
     while(1)
     {
 		requesting(x_dongle, coder);
         pthread_cond_wait(&x_dongle->cond, &x_dongle->mutex);
-        if (fifo_thing(x_dongle, coder->shared->data->coders, coder->id) == coder->id)
-		break;
+		if (is_sim(coder->shared) == 1)
+		{
+			pthread_mutex_unlock(&x_dongle->mutex);
+			return (1);
+		}
+        if (coder->shared->data->scheduler == 0)
+        {
+            if (fifo_thing(x_dongle, coder->shared->data->coders, coder->id) == coder->id)
+                break;
+        }
+        else
+        {
+            if (edf_thing(x_dongle, coder->shared->data->coders, coder->id) == coder->id)
+                break;
+        }
 	}
-	if (is_sim(coder->shared) == 1)
-	{
-		pthread_mutex_unlock(&x_dongle->mutex);
-		return (1);
-	}
-	compiling(coder);
+	pthread_mutex_unlock(&x_dongle->mutex);
 	return (0);
 }
 
@@ -77,9 +100,23 @@ int go_to_sleep(t_coder *coder, t_dongle *x_dongle)
 
 int   compiling(t_coder *coder)
 {
-	if (take_dongles(coder) == 2)
+	int aux;
+	
+	aux = take_dongles(coder);
+	while (aux != 0)
+	{
+		if (aux == 1)
+		{
 			if (go_to_sleep(coder, coder->r_don) == 1)
 				return (1);
+		}
+		else if (aux == 2)
+		{
+			if (go_to_sleep(coder, coder->l_don) == 1)
+				return (1);
+		}
+		aux = take_dongles(coder);
+	}
 	printer(4, coder->id, coder->shared);
 	pthread_mutex_lock(&coder->mutex);
 	coder->compile_counter += 1;

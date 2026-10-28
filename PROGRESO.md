@@ -26,12 +26,23 @@ de compilaciones sin "quemarse". Soporta dos planificadores: `fifo` y `edf`
 
 `./codexion <coders> <burntime> <compile_time> <debug_time> <refac_time> <n_compile> <dongle_cd> <fifo|edf>`
 
-## Estado actual (última sesión: 21/09/2026)
+## Estado actual (última sesión: 26/10/2026)
 
-- Se sigue atacando el **deadlock de dongles** con la nueva función "coger la
-  pareja" (`the_dongles` / `cosa` + `go_to_sleep`). El usuario está editando
-  fuera del repositorio; el código en disco NO refleja el avance (sigue la
-  versión a medias de `the_dongles`).
+- Se sigue atacando el **deadlock de dongles** con adquisición "todo o nada".
+  `compiling()` guarda una sola vez el resultado de `take_dongles()` y repite
+  el intento después de volver de `go_to_sleep()`.
+- `go_to_sleep()` ya espera con el mutex del dongle, comprueba el fin de
+  simulación después de despertar y selecciona FIFO o EDF según `scheduler`.
+- El proyecto compila y ya no se queda colgado al finalizar, pero en la prueba
+  siguen avanzando principalmente los Coders 0 y 2.
+- Diagnóstico actual del scheduler: en `fifo_thing()` y `edf_thing()` se usa
+  `aux = 2147483647`, demasiado pequeño para los valores absolutos de
+  `gettime()` en milisegundos desde 1970. Por eso las peticiones no se
+  seleccionan correctamente. `id_aux` también debe inicializarse para no
+  usarse sin valor cuando no hay peticiones activas.
+- FIFO y EDF ya están conectados en `requesting()`: `scheduler == 0` guarda
+  `time_stamp` y `scheduler == 1` guarda `deadline`. `edf_thing()` recorre las
+  peticiones del dongle y busca la menor `deadline`.
 - **Ramas del orden de lockeo ACLARADAS y aceptadas**: la condición correcta
   es `id - 1 < 0` (solo el Coder 0). Aclarado por qué:
   - Coder 0: `l_don = donglers[N-1]` (el mayor), `r_don = donglers[0]` → se
@@ -99,7 +110,10 @@ de compilaciones sin "quemarse". Soporta dos planificadores: `fifo` y `edf`
      `go_to_sleep` (hoy usa `x_don`/`x_coder` inexistentes), (b) el `else`
      pendiente de la rama de Coder 0, (c) quién señaliza la `cond` del
      dongle liberado.
-3. **El programa no se detiene al quemarse**: tras el primer "is burned"
+3. **Scheduler FIFO/EDF**: corregir el valor inicial de comparación para
+   `long long` y la inicialización de `id_aux`; después verificar que todos los
+   coders compiten correctamente por sus dongles.
+4. **El programa no se detiene al quemarse**: tras el primer "is burned"
    el mensaje se repite cada ciclo y la simulación no termina pronto.
    (Hipótesis en revisión en la próxima sesión.)
 - Verificar el output tras esos arreglos (probado con

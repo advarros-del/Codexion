@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scheduler.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/10 12:29:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/21 21:08:45 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/10/28 22:28:06 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	fifo_thing(t_dongle *x_dong, int coders, int id_coder)
 	int				id_aux;
 
 	i = 0;
-	aux = 2147483647;
+	aux = 9223372036854775807;
 	while (i < coders)
 	{
 		if (x_dong->requests[i].time_stamp > 0 && x_dong->requests[i].time_stamp < aux)
@@ -37,7 +37,7 @@ int	fifo_thing(t_dongle *x_dong, int coders, int id_coder)
 
 void	requesting(t_dongle *x_don, t_coder *x_coder)
 {
-	if (x_coder->shared->data->scheduler == 1)
+	if (x_coder->shared->data->scheduler == 0)
 	{
 		x_don->requests[x_coder->id].id_code = x_coder->id;
 		if (x_don->requests[x_coder->id].time_stamp <= 0)
@@ -45,9 +45,30 @@ void	requesting(t_dongle *x_don, t_coder *x_coder)
 	}
 	else
 	{
-		
 		x_don->requests[x_coder->id].id_code = x_coder->id;
 		if (x_don->requests[x_coder->id].deadline <= 0)
 		x_don->requests[x_coder->id].deadline = x_coder->last_compile + x_coder->shared->data->burntime;
 	}
+}
+
+int edf_thing(t_dongle *x_dong, int coders, int id_coders)
+{
+	int				i;
+	long long int	aux;
+	int				id_aux;
+
+	i = 0;
+	aux = 9223372036854775807;
+	while (i < coders)
+	{
+		if (x_dong->requests[i].deadline > 0 && x_dong->requests[i].deadline < aux)
+		{
+			aux = x_dong->requests[i].deadline;
+			id_aux = x_dong->requests[i].id_code;
+		}
+		i++;
+	}
+	if (id_coders == id_aux)
+		x_dong->requests[id_aux].deadline = 0;
+	return (id_aux);
 }
