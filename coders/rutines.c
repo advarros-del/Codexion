@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 15:01:33 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/10/25 19:30:17 by adrian           ###   ########.fr       */
+/*   Updated: 2026/10/29 18:52:24 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,9 @@ void	*coder_routine(void *arg)
 	return (NULL);
 }
 
+/********************************************************
+* -Check if some of the coders did all the compilations *
+********************************************************/
 
 int	is_sim_ended(t_shared* g_info)
 {
@@ -61,6 +64,10 @@ int	is_sim_ended(t_shared* g_info)
 	}
 	return (1);
 }
+
+/***************************************************
+* -Check if any coder is burning                   *
+***************************************************/
 
 int	on_fire(t_coder *coders)
 {
@@ -83,6 +90,9 @@ int	on_fire(t_coder *coders)
 	}
 	return (0);
 }
+/***************************************************************************
+* -Check if at the beginning of each routine some coder is done or burning *
+****************************************************************************/
 
 void	*monitor_rutine(void *arg)
 {

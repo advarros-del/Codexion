@@ -6,12 +6,16 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/10 12:29:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/10/28 22:28:06 by adrian           ###   ########.fr       */
+/*   Updated: 2026/10/29 18:56:24 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "codexion.h"
+
+/***************************************************
+* - Compare timestamps and choose the oldest       *
+***************************************************/
 
 int	fifo_thing(t_dongle *x_dong, int coders, int id_coder)
 {
@@ -35,6 +39,9 @@ int	fifo_thing(t_dongle *x_dong, int coders, int id_coder)
 	return (id_aux);
 }
 
+/***************************************************
+* - Check the shceduler, and fill the lists        *
+***************************************************/
 void	requesting(t_dongle *x_don, t_coder *x_coder)
 {
 	if (x_coder->shared->data->scheduler == 0)
@@ -50,6 +57,10 @@ void	requesting(t_dongle *x_don, t_coder *x_coder)
 		x_don->requests[x_coder->id].deadline = x_coder->last_compile + x_coder->shared->data->burntime;
 	}
 }
+
+/***************************************************
+* - Compare deadlines and choose the earliest      *
+***************************************************/
 
 int edf_thing(t_dongle *x_dong, int coders, int id_coders)
 {
