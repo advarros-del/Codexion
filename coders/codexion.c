@@ -88,11 +88,11 @@ void	printer(int phrase, int coder, t_shared *g_info)
 	long long	timeline;
 	
 	timeline = the_timeline(g_info);
-	list[1] = "is burned";
-	list[2] = "take a dongle";
-	list[3] = "leave a dongle";
-	list[4] = "is compiling";
-	list[5] = "is debugging";
-	list[6] = "is refactoring";
+	list[0] = "is burned";
+	list[1] = "take a dongle";
+	list[2] = "leave a dongle";
+	list[3] = "is compiling";
+	list[4] = "is debugging";
+	list[5] = "is refactoring";
 	printf("%lld Coder %d %s \n", timeline, coder, list[phrase]);
 }

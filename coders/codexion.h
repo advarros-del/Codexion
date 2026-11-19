@@ -96,7 +96,7 @@ void		*monitor_rutine(void *arg);
 int			codexion(char **argv);
 int			compiling(t_coder *coder);
 int			take_dong(t_dongle *x_don,  t_coder *x_coder);
-void		is_available(t_dongle *x_dong);
+//void		is_available(t_dongle *x_dong, long int dongle_cd);
 int			is_sim(t_shared *g_info);
 int			is_sim_ended(t_shared* g_info);
 int			fifo_thing(t_dongle *x_dong, int coders, int id_coder);
@@ -104,4 +104,5 @@ int 		edf_thing(t_dongle *x_dong, int coders, int id_coders);
 int			go_to_sleep(t_coder *coder, t_dongle *x_dong);
 void		requesting(t_dongle *x_don, t_coder *x_coder);
 int			on_fire(t_coder *coders);
+void    free_dongle(t_coder *coder, int ndong);
 #endif

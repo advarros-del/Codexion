@@ -15,13 +15,13 @@
 
 void	is_debugging(t_coder *coder)
 {
-	printer(5, coder->id, coder->shared);
+	printer(4, coder->id, coder->shared);
 	usleep(coder->shared->data->debug_time * 1000);
 }
 
 void	is_refactoring(t_coder *coder)
 {
-	printer(6, coder->id, coder->shared);
+	printer(5, coder->id, coder->shared);
 	usleep(coder->shared->data->refac_time * 1000);
 }
 
@@ -80,8 +80,9 @@ int	on_fire(t_coder *coders)
 	{
 		pthread_mutex_lock(&coders[i].mutex);
 		if ((now - coders[i].last_compile) >= coders->shared->data->burntime)
-		{	
-			printer(1, coders->id, coders->shared);
+		{
+			coders[i].shared->simulation_end = 1;
+			printer(0, coders->id, coders->shared);
 			pthread_mutex_unlock(&coders[i].mutex);
 			return (1);
 		}
@@ -116,7 +117,7 @@ void	*monitor_rutine(void *arg)
 				}
 				break;
 			}
-		usleep(100);
+		usleep(100);//no se porque tengo que esperar aqui 
 	}
 	return (NULL);
 }
