@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/10 12:29:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/20 13:27:30 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/20 14:53:46 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ static void	mute_this(t_coder *coder, int r)
 	}
 	else
 	{
-		pthread_mutex_lock(&coder->r_don->mutex);
 		pthread_mutex_lock(&coder->l_don->mutex);
+		pthread_mutex_lock(&coder->r_don->mutex);
 	}
 }
 
@@ -68,13 +68,16 @@ static void	is_available(t_dongle *x_dong, long int dongle_cd)
 {
 	pthread_mutex_lock(&x_dong->mutex);
 	if (x_dong->available == 0)
+	{
 		x_dong->available = !(x_dong->available);
+		pthread_mutex_unlock(&x_dong->mutex);
+	}
 	else
 	{
 		x_dong->available = !(x_dong->available);
+		pthread_mutex_unlock(&x_dong->mutex);
 		usleep(dongle_cd * 1000);
 	}
-	pthread_mutex_unlock(&x_dong->mutex);
 }
 
 /***************************************************
@@ -128,6 +131,8 @@ int	compiling(t_coder *coder)
 			return (1);
 		aux = take_dongles(coder);
 	}
+	if (still_alive(coder))
+		return (1);
 	pthread_mutex_lock(&coder->mutex);
 	coder->status = 2;
 	coder->compile_counter += 1;
@@ -135,14 +140,14 @@ int	compiling(t_coder *coder)
 	pthread_mutex_unlock(&coder->mutex);
 	printer(3, coder->id, coder->shared);
 	usleep(coder->shared->data->compile_time * 1000);
+	free_dongle(coder);
 	pthread_mutex_lock(&coder->mutex);
 	coder->status = 0;
 	pthread_mutex_unlock(&coder->mutex);
-	compiling_aux(coder);
 	return (0);
 }
 
-void	compiling_aux(t_coder *coder)
+void	free_dongle(t_coder *coder)
 {
 	is_available(coder->l_don, coder->shared->data->dongle_cd);
 	printer(2, coder->id, coder->shared);
@@ -150,4 +155,20 @@ void	compiling_aux(t_coder *coder)
 	is_available(coder->r_don, coder->shared->data->dongle_cd);
 	printer(2, coder->id, coder->shared);
 	pthread_cond_signal(&coder->r_don->cond);
+}
+int still_alive(t_coder *coder)
+{
+	long long int	now;
+
+	now = gettime();
+	pthread_mutex_lock(&coder->mutex);
+	if (coder->status == 1 || is_sim(coder->shared) == 1
+		|| now - coder->last_compile >= coder->shared->data->burntime)
+	{
+		pthread_mutex_unlock(&coder->mutex);
+		free_dongle(coder);
+		return (1);
+	}
+	pthread_mutex_unlock(&coder->mutex);
+	return (0);
 }

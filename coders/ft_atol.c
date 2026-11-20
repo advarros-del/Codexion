@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atol.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 15:52:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/03/04 15:31:04 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/11/20 15:07:15 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,3 +44,38 @@ long int	ft_atol(const char *nptr)
 	return (dest * n);
 }
 
+int	is_debugging(t_coder *coder)//comprobar que sigue vivo
+{
+	long long int	now;
+
+	now = gettime();
+	pthread_mutex_lock(&coder->mutex);
+	if (coder->status == 1 || is_sim(coder->shared) == 1
+		|| now - coder->last_compile >= coder->shared->data->burntime)
+	{
+		pthread_mutex_unlock(&coder->mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&coder->mutex);
+	printer(4, coder->id, coder->shared);
+	usleep(coder->shared->data->debug_time * 1000);
+	return (0);
+}
+
+int	is_refactoring(t_coder *coder)
+{
+	long long int	now;
+
+	now = gettime();
+	pthread_mutex_lock(&coder->mutex);
+	if (coder->status == 1 || is_sim(coder->shared) == 1
+		|| now - coder->last_compile >= coder->shared->data->burntime)
+	{
+		pthread_mutex_unlock(&coder->mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&coder->mutex);
+	printer(5, coder->id, coder->shared);
+	usleep(coder->shared->data->refac_time * 1000);
+	return (0);
+}

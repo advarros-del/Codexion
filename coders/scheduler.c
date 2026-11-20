@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/10 12:29:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/20 13:28:27 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/20 14:58:29 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,13 @@ int	fifo_thing(t_dongle *x_dong, int coders, int id_coder)
 	long long int	aux;
 	int				id_aux;
 
+	id_aux = 0;
 	i = 0;
 	aux = 9223372036854775807;
 	while (i < coders)
 	{
-		if (x_dong->requests[i].time_stamp > 0 && x_dong->requests[i].time_stamp < aux)
+		if (x_dong->requests[i].time_stamp > 0
+			&& x_dong->requests[i].time_stamp < aux)
 		{
 			aux = x_dong->requests[i].time_stamp;
 			id_aux = x_dong->requests[i].id_code;
@@ -67,11 +69,13 @@ int	edf_thing(t_dongle *x_dong, int coders, int id_coders)
 	long long int	aux;
 	int				id_aux;
 
+	id_aux = 0;
 	i = 0;
 	aux = 9223372036854775807;
 	while (i < coders)
 	{
-		if (x_dong->requests[i].deadline > 0 && x_dong->requests[i].deadline < aux)
+		if (x_dong->requests[i].deadline > 0
+			&& x_dong->requests[i].deadline < aux)
 		{
 			aux = x_dong->requests[i].deadline;
 			id_aux = x_dong->requests[i].id_code;

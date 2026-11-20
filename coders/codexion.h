@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/10/26 20:01:15 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/20 15:08:18 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,4 +105,5 @@ int			go_to_sleep(t_coder *coder, t_dongle *x_dong);
 void		requesting(t_dongle *x_don, t_coder *x_coder);
 int			on_fire(t_coder *coders);
 void    free_dongle(t_coder *coder, int ndong);
+//revisar las declaraciones de las funciones, si son void o int, y si devuelven algo o no.
 #endif

@@ -6,23 +6,11 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 15:01:33 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/20 13:23:46 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/20 15:02:23 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
-void	is_debugging(t_coder *coder)
-{
-	printer(4, coder->id, coder->shared);
-	usleep(coder->shared->data->debug_time * 1000);
-}
-
-void	is_refactoring(t_coder *coder)
-{
-	printer(5, coder->id, coder->shared);
-	usleep(coder->shared->data->refac_time * 1000);
-}
 
 void	*coder_routine(void *arg)
 {
@@ -31,14 +19,17 @@ void	*coder_routine(void *arg)
 	coder = (t_coder *)arg;
 	while (1)
 	{
-		if (compiling(coder) == 1)
+		if (compiling(coder) == 1 || is_debugging(coder) == 1
+			|| is_refactoring(coder) == 1)
 			break ;
-		printer(3, coder->id, coder->shared);
-		is_debugging(coder);
-		is_refactoring(coder);
 		if (is_sim_ended(coder->shared) == 1
 			|| on_fire(coder->shared->coders) == 1)
+		{
+			pthread_mutex_lock(&coder->shared->end_mutex);
+			coder->shared->simulation_end = 1;
+			pthread_mutex_unlock(&coder->shared->end_mutex);
 			break ;
+		}
 	}
 	return (NULL);
 }
@@ -47,7 +38,7 @@ void	*coder_routine(void *arg)
 * -Check if some of the coders did all the compilations *
 ********************************************************/
 
-int	is_sim_ended(t_shared * g_info)
+int	is_sim_ended(t_shared *g_info)
 {
 	int	i;
 
@@ -76,26 +67,22 @@ int	on_fire(t_coder *coders)
 	long long int	now;
 
 	now = gettime();
-	i = 0;
-	while (i < coders->shared->data->coders)
+	i = -1;
+	while (++i < coders->shared->data->coders)
 	{
 		pthread_mutex_lock(&coders[i].mutex);
 		if ((now - coders[i].last_compile) >= coders->shared->data->burntime
-			&& coders[i].status != 2)
+			&& coders[i].status == 0)
 		{
 			pthread_mutex_lock(&coders[i].shared->end_mutex);
 			coders[i].shared->simulation_end = 1;
 			pthread_mutex_unlock(&coders[i].shared->end_mutex);
-			if (coders[i].status == 0)
-			{
-				printer(0, coders->id, coders->shared);
-				coders[i].status = 1;
-			}
+			printer(0, coders[i].id, coders->shared);
+			coders[i].status = 1;
 			pthread_mutex_unlock(&coders[i].mutex);
 			return (1);
 		}
 		pthread_mutex_unlock(&coders[i].mutex);
-		i++;
 	}
 	return (0);
 }
@@ -120,12 +107,12 @@ void	*monitor_rutine(void *arg)
 			pthread_mutex_unlock(&g_info->end_mutex);
 			while (g_info->data->coders > i)
 			{
-				pthread_cond_signal(&g_info->donglers[i].cond);
+				pthread_cond_broadcast(&g_info->donglers[i].cond);
 				i++;
 			}
 			break ;
 		}
-		usleep(100);//no se porque tengo que esperar aqui 
+		usleep(100);
 	}
 	return (NULL);
 }
