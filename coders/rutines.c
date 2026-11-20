@@ -6,12 +6,11 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 15:01:33 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/10/29 18:52:24 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/20 13:23:46 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
 
 void	is_debugging(t_coder *coder)
 {
@@ -33,11 +32,13 @@ void	*coder_routine(void *arg)
 	while (1)
 	{
 		if (compiling(coder) == 1)
-			break;
+			break ;
+		printer(3, coder->id, coder->shared);
 		is_debugging(coder);
 		is_refactoring(coder);
-		if (is_sim_ended(coder->shared) == 1 || on_fire(coder->shared->coders) == 1)
-			break;		
+		if (is_sim_ended(coder->shared) == 1
+			|| on_fire(coder->shared->coders) == 1)
+			break ;
 	}
 	return (NULL);
 }
@@ -46,7 +47,7 @@ void	*coder_routine(void *arg)
 * -Check if some of the coders did all the compilations *
 ********************************************************/
 
-int	is_sim_ended(t_shared* g_info)
+int	is_sim_ended(t_shared * g_info)
 {
 	int	i;
 
@@ -71,18 +72,25 @@ int	is_sim_ended(t_shared* g_info)
 
 int	on_fire(t_coder *coders)
 {
-	int	i;
-	long long	int now;
+	int				i;
+	long long int	now;
 
 	now = gettime();
 	i = 0;
 	while (i < coders->shared->data->coders)
 	{
 		pthread_mutex_lock(&coders[i].mutex);
-		if ((now - coders[i].last_compile) >= coders->shared->data->burntime)
+		if ((now - coders[i].last_compile) >= coders->shared->data->burntime
+			&& coders[i].status != 2)
 		{
+			pthread_mutex_lock(&coders[i].shared->end_mutex);
 			coders[i].shared->simulation_end = 1;
-			printer(0, coders->id, coders->shared);
+			pthread_mutex_unlock(&coders[i].shared->end_mutex);
+			if (coders[i].status == 0)
+			{
+				printer(0, coders->id, coders->shared);
+				coders[i].status = 1;
+			}
 			pthread_mutex_unlock(&coders[i].mutex);
 			return (1);
 		}
@@ -91,37 +99,36 @@ int	on_fire(t_coder *coders)
 	}
 	return (0);
 }
+
 /***************************************************************************
 * -Check if at the beginning of each routine some coder is done or burning *
-****************************************************************************/
+***************************************************************************/
 
 void	*monitor_rutine(void *arg)
 {
-	int	i;
+	int			i;
 	t_shared	*g_info;
 
 	g_info = (t_shared *)arg;
-
 	i = 0;
 	while (1)
 	{
 		if (is_sim_ended(g_info) == 1 || on_fire(g_info->coders) == 1)
+		{
+			pthread_mutex_lock(&g_info->end_mutex);
+			g_info->simulation_end = 1;
+			pthread_mutex_unlock(&g_info->end_mutex);
+			while (g_info->data->coders > i)
 			{
-				pthread_mutex_lock(&g_info->end_mutex);
-				g_info->simulation_end = 1;
-				pthread_mutex_unlock(&g_info->end_mutex);
-				while (g_info->data->coders > i)
-				{
-					pthread_cond_signal(&g_info->donglers[i].cond);
-					i++;
-				}
-				break;
+				pthread_cond_signal(&g_info->donglers[i].cond);
+				i++;
 			}
+			break ;
+		}
 		usleep(100);//no se porque tengo que esperar aqui 
 	}
 	return (NULL);
 }
-
 
 int	is_sim(t_shared *g_info)
 {
@@ -132,4 +139,3 @@ int	is_sim(t_shared *g_info)
 	pthread_mutex_unlock(&g_info->end_mutex);
 	return (i);
 }
-

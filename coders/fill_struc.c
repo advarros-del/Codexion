@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fill_struc.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 09:38:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/09/18 17:05:50 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/11/20 13:27:56 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	fill_coder(t_shared *g_info)
 int	init_donglers(t_shared *g_info)
 {
 	int	i;
-	int j;
+	int	j;
 
 	i = 0;
 	while (i < g_info->data->coders)

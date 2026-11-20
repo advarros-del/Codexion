@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/10/25 19:28:33 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/20 13:24:25 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	codexion(char **argv)
 	t_coder		*the_coders;
 	t_dongle	*donglers;
 	pthread_t	monitor;
-	int	i;
+	int			i;
 
 	data = the_true_data(argv);
 	g_info.data = data;
@@ -53,7 +53,7 @@ int	codexion(char **argv)
 	if (fill_things(&g_info, the_coders, donglers) != 0)
 		return (1);
 	if (pthread_create(&monitor, NULL, monitor_rutine, &g_info) != 0)
-			return (0);
+		return (0);
 	i = 0;
 	while (i < g_info.data->coders)
 	{
@@ -86,7 +86,7 @@ void	printer(int phrase, int coder, t_shared *g_info)
 {
 	char		*list[6];
 	long long	timeline;
-	
+
 	timeline = the_timeline(g_info);
 	list[0] = "is burned";
 	list[1] = "take a dongle";

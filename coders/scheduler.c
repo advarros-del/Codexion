@@ -6,10 +6,9 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/10 12:29:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/10/29 18:56:24 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/20 13:28:27 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "codexion.h"
 
@@ -62,7 +61,7 @@ void	requesting(t_dongle *x_don, t_coder *x_coder)
 * - Compare deadlines and choose the earliest      *
 ***************************************************/
 
-int edf_thing(t_dongle *x_dong, int coders, int id_coders)
+int	edf_thing(t_dongle *x_dong, int coders, int id_coders)
 {
 	int				i;
 	long long int	aux;
