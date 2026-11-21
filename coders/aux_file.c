@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atol.c                                          :+:      :+:    :+:   */
+/*   aux_file.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 15:52:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/20 15:07:15 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/21 21:20:40 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,13 @@ long int	ft_atol(const char *nptr)
 	return (dest * n);
 }
 
-int	is_debugging(t_coder *coder)//comprobar que sigue vivo
+int	is_debugging(t_coder *coder)
 {
 	long long int	now;
 
 	now = gettime();
 	pthread_mutex_lock(&coder->mutex);
-	if (coder->status == 1 || is_sim(coder->shared) == 1
+	if (coder->status == 1
 		|| now - coder->last_compile >= coder->shared->data->burntime)
 	{
 		pthread_mutex_unlock(&coder->mutex);
@@ -68,7 +68,7 @@ int	is_refactoring(t_coder *coder)
 
 	now = gettime();
 	pthread_mutex_lock(&coder->mutex);
-	if (coder->status == 1 || is_sim(coder->shared) == 1
+	if (coder->status == 1
 		|| now - coder->last_compile >= coder->shared->data->burntime)
 	{
 		pthread_mutex_unlock(&coder->mutex);
@@ -78,4 +78,27 @@ int	is_refactoring(t_coder *coder)
 	printer(5, coder->id, coder->shared);
 	usleep(coder->shared->data->refac_time * 1000);
 	return (0);
+}
+
+void	printer(int phrase, int coder, t_shared *g_info)
+{
+	char		*list[6];
+	long long	timeline;
+
+	timeline = the_timeline(g_info);
+	list[0] = "is burned";
+	list[1] = "take a dongle";
+	list[2] = "leave a dongle";
+	list[3] = "is compiling";
+	list[4] = "is debugging";
+	list[5] = "is refactoring";
+	printf("%lld Coder %d %s \n", timeline, coder, list[phrase]);
+}
+
+long long	gettime(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));
 }

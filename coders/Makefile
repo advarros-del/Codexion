@@ -6,7 +6,7 @@
 #    By: adrian <adrian@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/30 11:27:05 by adrvarga          #+#    #+#              #
-#    Updated: 2026/10/25 19:32:40 by adrian           ###   ########.fr        #
+#    Updated: 2026/11/21 18:05:15 by adrian           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,12 +22,13 @@ CFLAGS = -Wextra -Werror -Wall -g
 
 #All files .c that you need
 SRC = codexion.c\
-	ft_atol.c\
+	aux_file.c\
 	main.c\
 	fill_struc.c\
 	rutines.c\
 	scheduler.c\
 	compilation.c\
+	compi_aux.c\
 	
 #Transform all the .c to .o
 OBJS = $(SRC:.c=.o)

@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/20 15:08:18 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/21 19:45:44 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,21 @@
 
 typedef struct heap_call
 {
-	int	id_code;
+	int			id_code;
 	long long	time_stamp;
 	long long	deadline;
 }	t_heap_call;
 
 typedef struct data
 {
-	int	coders;
-	int	burntime;
+	int			coders;
+	int			burntime;
 	long long	compile_time;
 	long long	debug_time;
 	long long	refac_time;
-	int	n_compile;
-	int	dongle_cd;
-	int	scheduler;
+	int			n_compile;
+	int			dongle_cd;
+	int			scheduler;
 }	t_data;
 
 typedef struct dongle
@@ -86,24 +86,29 @@ typedef struct don_container
 
 
 
-int			fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers);
+int			codexion(char **argv);
+t_data		*the_true_data(char **argv);
+int			fill_things(t_shared *g_info,
+				t_coder *the_coders, t_dongle *donglers);
 void		printer(int phrase, int coder, t_shared *g_info);
+long long	the_timeline(t_shared *g_info);
 long int	ft_atol(const char *nptr);
 long long	gettime(void);
 void		sleepnow(long long time);
 void		*coder_routine(void *arg);
 void		*monitor_rutine(void *arg);
-int			codexion(char **argv);
 int			compiling(t_coder *coder);
-int			take_dong(t_dongle *x_don,  t_coder *x_coder);
+int			still_alive(t_coder *coder);
+void		free_dongle(t_coder *coder);
+int			take_dong(t_dongle *x_don, t_coder *x_coder);
 //void		is_available(t_dongle *x_dong, long int dongle_cd);
 int			is_sim(t_shared *g_info);
-int			is_sim_ended(t_shared* g_info);
+int			is_sim_ended(t_shared *g_info);
 int			fifo_thing(t_dongle *x_dong, int coders, int id_coder);
-int 		edf_thing(t_dongle *x_dong, int coders, int id_coders);
+int			edf_thing(t_dongle *x_dong, int coders, int id_coders);
 int			go_to_sleep(t_coder *coder, t_dongle *x_dong);
 void		requesting(t_dongle *x_don, t_coder *x_coder);
 int			on_fire(t_coder *coders);
-void    free_dongle(t_coder *coder, int ndong);
-//revisar las declaraciones de las funciones, si son void o int, y si devuelven algo o no.
+int			is_debugging(t_coder *coder);
+int			is_refactoring(t_coder *coder);
 #endif

@@ -6,71 +6,11 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/20 13:24:25 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/21 17:58:31 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
-t_data	*the_true_data(char **argv)
-{
-	t_data	*data;
-
-	data = malloc(sizeof(t_data));
-	if (!data)
-		return (NULL);
-	data->coders = ft_atol(argv[1]);
-	data->burntime = ft_atol(argv[2]);
-	data->compile_time = ft_atol(argv[3]);
-	data->debug_time = ft_atol(argv[4]);
-	data->refac_time = ft_atol(argv[5]);
-	data->n_compile = ft_atol(argv[6]);
-	data->dongle_cd = ft_atol(argv[7]);
-	if (strlen(argv[8]) == 4)
-		data->scheduler = 0;
-	else
-		data->scheduler = 1;
-	return (data);
-}
-
-int	codexion(char **argv)
-{
-	t_shared	g_info;
-	t_data		*data;
-	t_coder		*the_coders;
-	t_dongle	*donglers;
-	pthread_t	monitor;
-	int			i;
-
-	data = the_true_data(argv);
-	g_info.data = data;
-	the_coders = malloc(data->coders * sizeof(t_coder));
-	if (!the_coders)
-		return (1);
-	donglers = malloc(data->coders * sizeof(t_dongle));
-	if (!donglers)
-		return (1);
-	if (fill_things(&g_info, the_coders, donglers) != 0)
-		return (1);
-	if (pthread_create(&monitor, NULL, monitor_rutine, &g_info) != 0)
-		return (0);
-	i = 0;
-	while (i < g_info.data->coders)
-	{
-		if (pthread_create(&g_info.coders[i].thread, NULL,
-				coder_routine, &g_info.coders[i]) != 0)
-			return (0);
-		i++;
-	}
-	i = 0;
-	while (i < g_info.data->coders)
-	{
-		pthread_join(g_info.coders[i].thread, NULL);
-		i++;
-	}
-	pthread_join(monitor, NULL);
-	return (0);
-}
 
 long long	the_timeline(t_shared *g_info)
 {
@@ -82,17 +22,52 @@ long long	the_timeline(t_shared *g_info)
 	return (t);
 }
 
-void	printer(int phrase, int coder, t_shared *g_info)
+void	create_pthreads(t_shared *g_info, t_coder *the_coders)
 {
-	char		*list[6];
-	long long	timeline;
+	int	i;
 
-	timeline = the_timeline(g_info);
-	list[0] = "is burned";
-	list[1] = "take a dongle";
-	list[2] = "leave a dongle";
-	list[3] = "is compiling";
-	list[4] = "is debugging";
-	list[5] = "is refactoring";
-	printf("%lld Coder %d %s \n", timeline, coder, list[phrase]);
+	i = 0;
+	while (i < g_info->data->coders)
+	{
+		if (pthread_create(&the_coders[i].thread, NULL,
+				coder_routine, &the_coders[i]) != 0)
+			return ;
+		i++;
+	}
+}
+
+void	join_pthreads(t_shared *g_info, t_coder *the_coders)
+{
+	int	i;
+
+	i = 0;
+	while (i < g_info->data->coders)
+	{
+		pthread_join(the_coders[i].thread, NULL);
+		i++;
+	}
+}
+
+int	codexion(char **argv)
+{
+	t_shared	g_info;
+	t_data		*data;
+	t_coder		*the_coders;
+	t_dongle	*donglers;
+	pthread_t	monitor;
+
+	data = the_true_data(argv);
+	g_info.data = data;
+	the_coders = malloc(data->coders * sizeof(t_coder));
+	if (!the_coders)
+		return (1);
+	donglers = malloc(data->coders * sizeof(t_dongle));
+	if (!donglers || fill_things(&g_info, the_coders, donglers) == 1)
+		return (1);
+	if (pthread_create(&monitor, NULL, monitor_rutine, &g_info) != 0)
+		return (0);
+	create_pthreads(&g_info, the_coders);
+	join_pthreads(&g_info, the_coders);
+	pthread_join(monitor, NULL);
+	return (0);
 }

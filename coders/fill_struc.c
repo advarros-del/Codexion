@@ -6,19 +6,11 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 09:38:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/20 13:27:56 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/21 20:14:00 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
-long long	gettime(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000LL) + (tv.tv_usec / 1000));
-}
 
 void	fill_coder(t_shared *g_info)
 {
@@ -57,7 +49,8 @@ int	init_donglers(t_shared *g_info)
 		g_info->donglers[i].used = 0;
 		g_info->donglers[i].last_release = 0;
 		g_info->donglers[i].available = 0;
-		g_info->donglers[i].requests = malloc(sizeof(t_heap_call) * g_info->data->coders);
+		g_info->donglers[i].requests
+			= malloc(sizeof(t_heap_call) * g_info->data->coders);
 		j = 0;
 		while (g_info->data->coders > j)
 		{
@@ -90,4 +83,25 @@ int	fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)
 	fill_coder(g_info);
 	init_donglers(g_info);
 	return (0);
+}
+
+t_data	*the_true_data(char **argv)
+{
+	t_data	*data;
+
+	data = malloc(sizeof(t_data));
+	if (!data)
+		return (NULL);
+	data->coders = ft_atol(argv[1]);
+	data->burntime = ft_atol(argv[2]);
+	data->compile_time = ft_atol(argv[3]);
+	data->debug_time = ft_atol(argv[4]);
+	data->refac_time = ft_atol(argv[5]);
+	data->n_compile = ft_atol(argv[6]);
+	data->dongle_cd = ft_atol(argv[7]);
+	if (strlen(argv[8]) == 4)
+		data->scheduler = 0;
+	else
+		data->scheduler = 1;
+	return (data);
 }

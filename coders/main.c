@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adrvarga <adrvarga@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:56:11 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/08/10 20:30:03 by adrvarga         ###   ########.fr       */
+/*   Updated: 2026/11/21 20:10:31 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 static int	is_digit(char *arg)
 {
-	int	i;
+	int			i;
+	long int	aux;
 
 	i = 0;
 	while (arg[i] != '\0')
@@ -23,6 +24,9 @@ static int	is_digit(char *arg)
 			return (1);
 		i++;
 	}
+	aux = 2147483647;
+	if (ft_atol(arg) > aux)
+		return (1);
 	return (0);
 }
 
@@ -38,7 +42,7 @@ static int	is_valid(char *arg)
 	while (arg[i] != '\0')
 	{
 		if (arg[i] != opt1[i])
-			break;
+			break ;
 		i++;
 	}
 	if (i >= 3)
@@ -47,7 +51,7 @@ static int	is_valid(char *arg)
 	while (arg[i] != '\0')
 	{
 		if (arg[i] != opt2[i])
-			break;
+			break ;
 		i++;
 	}
 	if (i >= 2)
@@ -60,19 +64,19 @@ static int	parser_error(char **argv)
 	int	i;
 
 	i = 1;
-	while (i > 8)
+	while (i <= 7)
 	{
 		if (is_digit(argv[i]) == 1)
 		{
 			printf("The argument %d is incorrect.", i);
 			return (1);
 		}
-		if (strlen(argv[i]) > 4 || is_valid(argv[i]) == 1)
-		{
-			printf("The argument %d is incorrect.", i);
-			return (1);
-		}
 		i++;
+	}
+	if (strlen(argv[i]) > 4 || is_valid(argv[i]) == 1)
+	{
+		printf("The argument %d is incorrect.", i);
+		return (1);
 	}
 	return (0);
 }
@@ -85,7 +89,7 @@ int	main(int argc, char **argv)
 		printf(" for correct usage");
 		return (1);
 	}
-	if (parser_error(argv) == 1 || codexion(argv) == 1) // comprobar el limite  de int
+	if (parser_error(argv) == 1 || codexion(argv) == 1)
 	{
 		printf("Something goes wrong");
 		return (1);
