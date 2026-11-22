@@ -6,7 +6,7 @@
 #    By: adrian <adrian@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/30 11:27:05 by adrvarga          #+#    #+#              #
-#    Updated: 2026/11/21 18:05:15 by adrian           ###   ########.fr        #
+#    Updated: 2026/11/22 21:30:46 by adrian           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,8 @@ SRC = codexion.c\
 	scheduler.c\
 	compilation.c\
 	compi_aux.c\
+	init.c\
+	clenaer.c\
 	
 #Transform all the .c to .o
 OBJS = $(SRC:.c=.o)

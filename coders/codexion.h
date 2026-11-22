@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 14:57:59 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/21 19:45:44 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/22 21:41:50 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,8 @@ int			codexion(char **argv);
 t_data		*the_true_data(char **argv);
 int			fill_things(t_shared *g_info,
 				t_coder *the_coders, t_dongle *donglers);
+int			init_donglers(t_dongle *donglers, int total);
+int			init_coder(t_shared *g_info);
 void		printer(int phrase, int coder, t_shared *g_info);
 long long	the_timeline(t_shared *g_info);
 long int	ft_atol(const char *nptr);
@@ -101,7 +103,6 @@ int			compiling(t_coder *coder);
 int			still_alive(t_coder *coder);
 void		free_dongle(t_coder *coder);
 int			take_dong(t_dongle *x_don, t_coder *x_coder);
-//void		is_available(t_dongle *x_dong, long int dongle_cd);
 int			is_sim(t_shared *g_info);
 int			is_sim_ended(t_shared *g_info);
 int			fifo_thing(t_dongle *x_dong, int coders, int id_coder);
@@ -111,4 +112,8 @@ void		requesting(t_dongle *x_don, t_coder *x_coder);
 int			on_fire(t_coder *coders);
 int			is_debugging(t_coder *coder);
 int			is_refactoring(t_coder *coder);
+void		in_the_end(t_shared *g_info);
+void   		clean_coders(t_coder *coders, int i);
+void		clean_donglers(t_dongle *donglers, int i);
+void		clean_shared(t_shared *g_info);
 #endif

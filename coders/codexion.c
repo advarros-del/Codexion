@@ -6,7 +6,7 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/23 17:04:55 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/21 17:58:31 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/22 21:06:05 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,23 +51,21 @@ void	join_pthreads(t_shared *g_info, t_coder *the_coders)
 int	codexion(char **argv)
 {
 	t_shared	g_info;
-	t_data		*data;
-	t_coder		*the_coders;
-	t_dongle	*donglers;
 	pthread_t	monitor;
 
-	data = the_true_data(argv);
-	g_info.data = data;
-	the_coders = malloc(data->coders * sizeof(t_coder));
-	if (!the_coders)
-		return (1);
-	donglers = malloc(data->coders * sizeof(t_dongle));
-	if (!donglers || fill_things(&g_info, the_coders, donglers) == 1)
-		return (1);
+	g_info.data = the_true_data(argv);
+	g_info.coders = malloc(g_info.data->coders * sizeof(t_coder));
+	if (!g_info.coders)
+		return (in_the_end(&g_info), 1);
+	g_info.donglers = malloc(g_info.data->coders * sizeof(t_dongle));
+	if (!g_info.donglers || fill_things(&g_info, g_info.coders, g_info.donglers) == 1)
+		return (in_the_end(&g_info), 1);
 	if (pthread_create(&monitor, NULL, monitor_rutine, &g_info) != 0)
 		return (0);
-	create_pthreads(&g_info, the_coders);
-	join_pthreads(&g_info, the_coders);
+	create_pthreads(&g_info, g_info.coders);
+	join_pthreads(&g_info, g_info.coders);
 	pthread_join(monitor, NULL);
+	in_the_end(&g_info);
 	return (0);
 }
+

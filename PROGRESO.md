@@ -78,10 +78,23 @@ de compilaciones sin "quemarse". Soporta dos planificadores: `fifo` y `edf`
 
 ## Pendiente / siguiente
 
-1. **`printer` en `on_fire` imprime siempre "Coder 0"**: el mensaje de
+1. **Liberación de recursos y hilos**:
+   - Hacer `pthread_join()` de todos los hilos creados y comprobar los errores
+     de `pthread_create()`.
+   - Destruir todos los mutex creados: uno por coder, uno por dongle,
+     `end_mutex` y `print_mutex`.
+   - Destruir todas las variables condición creadas: una por dongle.
+   - Liberar la memoria dinámica:
+     `t_data *data`, el array de coders, el array de dongles y
+     `requests[i].requests` de cada dongle.
+   - Ejecutar pruebas con Valgrind u AddressSanitizer para detectar leaks,
+     uso después de liberar y data races.
+   - Revisar la condición de fin para liberar recursos solo después de que
+     el monitor y todos los coders hayan terminado.
+2. **`printer` en `on_fire` imprime siempre "Coder 0"**: el mensaje de
    "is burned" usa un `id` que no es `coders[i].id`. Candidato: imprimir
    `coders[i].id` (y no `coders->id`).
-2. **Deadlock de dongles**: 5 coders cogen 1 dongle cada uno, ninguno puede
+3. **Deadlock de dongles**: 5 coders cogen 1 dongle cada uno, ninguno puede
    compilar y alguien quema. Diseño acordado (en curso, 21/09):
    - Regla de orden de lockeo: SIEMPRE subiendo de índice (asegura que nunca
      se forme el círculo). Cada coder lockea el dongle de índice menor

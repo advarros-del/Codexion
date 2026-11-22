@@ -6,13 +6,13 @@
 /*   By: adrian <adrian@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/27 09:38:36 by adrvarga          #+#    #+#             */
-/*   Updated: 2026/11/21 20:14:00 by adrian           ###   ########.fr       */
+/*   Updated: 2026/11/22 21:38:44 by adrian           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	fill_coder(t_shared *g_info)
+static int	fill_coder(t_shared *g_info)
 {
 	int	i;
 	int	aux;
@@ -26,7 +26,6 @@ void	fill_coder(t_shared *g_info)
 		g_info->coders[i].last_compile = g_info->start_ime;
 		g_info->coders[i].status = 0;
 		g_info->coders[i].ndong = 0;
-		pthread_mutex_init(&g_info->coders[i].mutex, NULL);
 		g_info->coders[i].thread = 0; //no se porque
 		g_info->coders[i].shared = g_info;
 		g_info->coders[i].r_don = &g_info->donglers[i];
@@ -36,52 +35,65 @@ void	fill_coder(t_shared *g_info)
 			g_info->coders[i].l_don = &g_info->donglers[i -1];
 		i++;
 	}
+	return (i);
 }
 
-int	init_donglers(t_shared *g_info)
+
+static void fill_dongles(t_shared *g_info, t_dongle *donglers)
 {
 	int	i;
 	int	j;
 
-	i = 0;
-	while (i < g_info->data->coders)
+	i = -1;
+	while (++i < g_info->data->coders)
 	{
-		g_info->donglers[i].used = 0;
-		g_info->donglers[i].last_release = 0;
-		g_info->donglers[i].available = 0;
-		g_info->donglers[i].requests
-			= malloc(sizeof(t_heap_call) * g_info->data->coders);
-		j = 0;
-		while (g_info->data->coders > j)
+		donglers[i].used = 0;
+		donglers[i].last_release = 0;
+		donglers[i].available = 0;
+		j = -1;
+		while (g_info->data->coders > ++j)
 		{
-			g_info->donglers[i].requests[j].id_code = j;
-			g_info->donglers[i].requests[j].deadline = 0;
-			g_info->donglers[i].requests[j].time_stamp = 0;
-			j++;
+			donglers[i].requests[j].id_code = j;
+			donglers[i].requests[j].deadline = 0;
+			donglers[i].requests[j].time_stamp = 0;
 		}
-		pthread_cond_init(&g_info->donglers[i].cond, NULL);
-		if (pthread_mutex_init(&g_info->donglers[i].mutex, NULL) != 0)
-			return (0);
-		i++;
 	}
-	return (1);
 }
 
-void	fill_shared(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)
+static int	fill_shared(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)
 {
 	g_info->coders = the_coders;
 	g_info->donglers = donglers;
 	g_info->simulation_end = 0;
 	g_info->start_ime = gettime();
-	pthread_mutex_init(&g_info->end_mutex, NULL);
-	pthread_mutex_init(&g_info->print_mutex, NULL);
+	if (pthread_mutex_init(&g_info->end_mutex, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&g_info->print_mutex, NULL) != 0)
+	{
+		pthread_mutex_destroy(&g_info->end_mutex);
+		return(1);
+	}
+	return (0);
 }
 
 int	fill_things(t_shared *g_info, t_coder *the_coders, t_dongle *donglers)
 {
-	fill_shared(g_info, the_coders, donglers);
+	int i;
+
+	if (fill_shared(g_info, the_coders, donglers) != 0)
+		return (1);
+	if (init_coder(g_info) == -1)
+		return (clean_shared(g_info), 1);
 	fill_coder(g_info);
-	init_donglers(g_info);
+	i = init_donglers(donglers, g_info->data->coders);
+	if (i != g_info->data->coders)
+	{
+		clean_donglers(donglers, i);
+		clean_coders(the_coders, g_info->data->coders);
+		clean_shared(g_info);
+		return (1);
+	}
+	fill_dongles(g_info, donglers);
 	return (0);
 }
 
